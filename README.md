@@ -1,0 +1,2 @@
+# weatherApp
+A JavaScript project
