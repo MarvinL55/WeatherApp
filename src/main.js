@@ -1,26 +1,48 @@
-function checkWeather(city) {
-  const apikey = '0023c10b6c1582cb4741a42787b3a2cd';
-  const apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=&units=metric&appid=" + apikey;
+// main.js
 
-  const searchBox = document.querySelector(".search input");
-  const searchBtn = document.querySelector(".search button")
+const apikey = "0023c10b6c1582cb4741a42787b3a2cd";
+const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
 
-  fetch(apiUrl)
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
+const searchBox = document.querySelector(".search input");
+const searchBtn = document.querySelector(".search button");
+const weatherIcon = document.querySelector(".weather-icon");
 
-      // Set the innerHTML of the ".city" element here, where "data" is accessible.
-      document.querySelector(".city").innerHTML = data.name;
-      document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°c";
-      document.querySelector(".humidity").innerHTML = data.main.humidit + "%";
-      document.querySelector(".wind").innerHTML = data.wind.speed + "mph";
-    })
-    .catch((error) => {
-      console.log("Error fetching weather data: ", error);
-    });
+async function checkWeather(city) {
+  const response = await fetch(apiUrl + city + `&appid=${apikey}`);
+
+  if(response.status == 404){
+    document.querySelector(".error").style.display = "block";
+    document.querySelector(".weather").style.display = "none";
+  }else{
+    var data = await response.json();
+
+  document.querySelector(".city").innerHTML = data.name;
+  document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+  document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+  document.querySelector(".wind").innerHTML = data.wind.speed + "km/h";
+
+  if (data.weather[0].main == "Clouds") {
+    weatherIcon.src = "images/clouds.png";
+  } else if (data.weather[0].main == "Clear") {
+    weatherIcon.src = "images/clear.png";
+  } else if (data.weather[0].main == "Rain") {
+    weatherIcon.src = "images/rain.png";
+  } else if (data.weather[0].main == "Drizzle") {
+    weatherIcon.src = "images/drizzle.png";
+  } else if (data.weather[0].main == "Mist") {
+    weatherIcon.src = "images/mist.png";
+  }
+
+  document.querySelector(".weather").style.display = "block";
+  document.querySelector(".error").style.display = "none";
+
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  checkWeather();
+  }
+
+searchBtn.addEventListener("click", () => {
+  checkWeather(searchBox.value);
 });
+
+// Initialize with default city (New York)
+checkWeather("New York");
